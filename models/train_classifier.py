@@ -22,6 +22,21 @@ nltk.download('stopwords')
 nltk.download('wordnet')
 
 def load_data(database_filepath):
+    '''
+    INPUT
+    database_filepath - string [path and filename of the source db file]
+    
+    OUTPUT
+    X - numpy ndarray containing the predictor dataset for modelling
+    Y - numpy ndarray containing the target dataset for modelling
+    cat_names - numpy ndarray containing the names of the target variable(s)
+    
+
+    This function performs following steps to produce output dataframe:
+    1. Load the disaster messages data from the db file
+    2. Splits and returns the predictor variables dataset, target variables dataset and names of
+    target variables
+    '''
     # load data from database
     db_file = 'sqlite:///'+database_filepath
     print(db_file)
@@ -34,6 +49,16 @@ def load_data(database_filepath):
     return X, Y, cat_names
 
 def tokenize(text):
+    '''
+    INPUT
+    text - string [raw text to be tokenized]
+    
+    OUTPUT
+    tokens - list of cleansed and lematized tokens
+    
+
+    This function tokenize the given text for TFIDF vectorization
+    '''
     # initialize lemmatizer and stop words
     stop_words = stopwords.words("english")
     lemmatizer = WordNetLemmatizer()
@@ -51,6 +76,21 @@ def tokenize(text):
 
 
 def build_model():
+    '''
+    INPUT
+    None (uses the training dataset created earlier)
+    
+    OUTPUT
+    model - ML model for predicting the disaster categories (multi) based on input text
+    
+    
+
+    This function creates a model for predicting the response categories based on the message.
+    Evaluated Random Forest and Multinomial Naive Bayes classifiers. Random Forest performed better.
+    
+    **Note**: the GridCV didn't work for multiple parameters and multiple values due to limitations 
+    on training environment. 
+    '''
     # create the pipeline
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
@@ -71,11 +111,35 @@ def build_model():
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    '''
+    INPUT
+    model - fitted ML model for evaluation
+    X_test - numpy ndarray containing the predictor test dataset for model evaluation
+    Y_test - numpy ndarray containing the target test dataset for model evaluation
+    category_names - numpy ndarray containing the names of the target variable(s) 
+    
+    OUTPUT
+    None - prints the evaluation report
+    
+
+    This function evaluates the model and prints the evaluation report
+    '''
     y_pred = model.predict(X_test)
     print(classification_report(np.hstack(Y_test),np.hstack(y_pred), target_names=category_names))
 
 
 def save_model(model, model_filepath):
+    '''
+    INPUT
+    model - final ML model to be saved
+    model_filepath - string [path and filename of the pickle file to be saved]
+
+    OUTPUT
+    None
+    
+
+    This function saves the model as pickle file
+    '''
     #save the model file
     with open(model_filepath, 'wb') as file:
         pickle.dump(model, file)

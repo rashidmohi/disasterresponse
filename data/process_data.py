@@ -5,6 +5,21 @@ from sqlalchemy import create_engine
 
 
 def load_data(messages_filepath, categories_filepath):
+    '''
+    INPUT
+    messages_filepath - string [path and filename of messages csv data file]
+    categories_filepath - string [path and filename of categories csv data file]
+
+    OUTPUT
+    df - pandas dataframe containing the combined data
+    
+
+    This function performs following steps to produce output dataframe:
+    1. Load the messages and categories data
+    2. Join the 2 datasets
+    3. Create columns for the categories with their column names accordingly
+    4. Replace the categories column with the new encoded categories columns
+    '''
     #load the data files
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
@@ -42,6 +57,18 @@ def load_data(messages_filepath, categories_filepath):
     return df
 
 def clean_data(df):
+    '''
+    INPUT
+    df- pandas dataframe containing the combined and original data
+    
+
+    OUTPUT
+    df - andas dataframe containing the cleansed data (duplicate removed)
+    
+
+    This function removes the duplicate records and returns the cleansed dataset
+    
+    '''
     # drop duplicates
     df = df.drop_duplicates(keep = 'first')
     
@@ -49,6 +76,17 @@ def clean_data(df):
 
 
 def save_data(df, database_filename):
+    '''
+    INPUT
+    df - andas dataframe containing the final dataset to be stored in database
+    database_filename - string [path and filename of target database file]
+
+    OUTPUT
+    None
+    
+
+    This function stores the final dataset into the given database
+    '''
     #create the sql db and save the file
     db_file = 'sqlite:///'+database_filename
     engine = create_engine(db_file)
