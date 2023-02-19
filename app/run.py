@@ -11,6 +11,10 @@ from plotly.graph_objs import Bar
 from sklearn.externals import joblib
 from sqlalchemy import create_engine
 
+# import for heatmap
+from plotly.graph_objs import Heatmap
+
+
 
 app = Flask(__name__)
 
@@ -39,12 +43,21 @@ model = joblib.load("../models/classifier.pkl")
 def index():
     
     # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
+    # Below is an example - data for the messages count by genre
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
     
+    # New dataset added. Count of messages by categories and genre. For the heatmap
+    df_heatmap = df.groupby('genre').sum()
+    df_heatmap = df_heatmap.drop('id',axis=1)
+    genre_type_names = df_heatmap.index.values
+    category_type_names = df_heatmap.columns.values
+    category_values = df_heatmap.values
+
+    
     # create visuals
-    # TODO: Below is an example - modify to create your own visuals
+    # 2 graphs - 1) Bar chart for messages by genre
+    #            2) Heatmap for messages by categories and genre
     graphs = [
         {
             'data': [
@@ -63,7 +76,37 @@ def index():
                     'title': "Genre"
                 }
             }
-        }
+        },
+            
+        {
+            'data': [
+                Heatmap(
+                    x=category_type_names,
+                    y=genre_type_names,
+                    z= category_values
+                )
+            ],
+
+            'layout': {
+                'title': 'Distribution of Message Categories by Genres',
+                'yaxis': {
+                    'title': "Genre"
+                },
+                'xaxis': {
+                    'title': {
+                        "text" : "Categories",
+                        "color": "blue"
+                    },
+                    'tickangle': 45,
+                    'automargin': True
+                    
+                },
+                'margin': {
+                    'autoexpand': True
+                    
+                }
+            }
+         }
     ]
     
     # encode plotly graphs in JSON
