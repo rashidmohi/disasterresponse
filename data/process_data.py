@@ -48,6 +48,8 @@ def load_data(messages_filepath, categories_filepath):
         categories[column] = pd.Series(categories[column]).apply(lambda x: x[-1:])
         # convert column from string to numeric
         categories[column] = categories[column].astype(int)
+        # replace any value >1 to 1. Binary (0,1) values only
+        categories.loc[categories[column] > 1, [column]] = 1
         
     # drop the original categories column from `df`
     # concatenate the original dataframe with the new `categories` dataframe
@@ -78,7 +80,7 @@ def clean_data(df):
 def save_data(df, database_filename):
     '''
     INPUT
-    df - andas dataframe containing the final dataset to be stored in database
+    df - pandas dataframe containing the final dataset to be stored in database
     database_filename - string [path and filename of target database file]
 
     OUTPUT

@@ -2,6 +2,8 @@
 This applications takes in a text message and classifies it against 36 categories. The classification can happen for 
 the multiple categories. 
 
+[Disaster Response Github Repo](https://github.com/rashidmohi/disasterresponse)
+
 ### Motivation:
 Motivation is provide a classification model + app that can help in a disaster situation, where the aid teams are
 struggling to save every minute in bringing the right aid to the distressed victims. This model can help to filter out
